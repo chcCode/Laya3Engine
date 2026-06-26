@@ -27,3 +27,13 @@ await GameApp.I
 2. Register feature services through `app.services`.
 3. Put display roots under `LayerManager` layers.
 4. Use `app.events` for decoupled feature communication.
+
+## Luban Config
+
+Project-side Luban files are under `config/luban` and `tools/luban`.
+
+```bat
+tools\luban\gen_config.cmd
+```
+
+Generated JSON is loaded by `ConfigManager` from `assets/resources/config/json`.

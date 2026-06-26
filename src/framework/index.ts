@@ -6,6 +6,7 @@ export * from "./core/ServiceLocator";
 export * from "./core/StateMachine";
 export * from "./managers/AssetManager";
 export * from "./managers/AudioManager";
+export * from "./managers/ConfigManager";
 export * from "./managers/InputManager";
 export * from "./managers/LayerManager";
 export * from "./managers/SceneManager";

@@ -5,6 +5,7 @@ import { ServiceLocator } from "./ServiceLocator";
 import { StateMachine } from "./StateMachine";
 import { AssetManager } from "../managers/AssetManager";
 import { AudioManager } from "../managers/AudioManager";
+import { ConfigManager } from "../managers/ConfigManager";
 import { InputManager } from "../managers/InputManager";
 import { LayerManager } from "../managers/LayerManager";
 import { SceneManager } from "../managers/SceneManager";
@@ -49,6 +50,10 @@ export class GameApp {
 
     get input(): InputManager {
         return this.services.get(InputManager);
+    }
+
+    get configs(): ConfigManager {
+        return this.services.get(ConfigManager);
     }
 
     get layers(): LayerManager {
@@ -112,6 +117,7 @@ export class GameApp {
     private registerDefaultServices(): void {
         this.services.register(AssetManager, new AssetManager());
         this.services.register(AudioManager, new AudioManager());
+        this.services.register(ConfigManager, new ConfigManager());
         this.services.register(InputManager, new InputManager());
         this.services.register(StorageManager, new StorageManager("Laya3Engine"));
 

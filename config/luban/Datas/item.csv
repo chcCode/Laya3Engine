@@ -1,0 +1,7 @@
+##var,id,name,icon,quality,desc
+##type,int,string,string,int,string
+##group,c,c,c,c,c
+##,Item id,Item name,Icon path,Quality,Description
+1001,Gold,resources/icons/gold.png,1,Basic currency
+1002,Diamond,resources/icons/diamond.png,3,Premium currency
+1003,Energy,resources/icons/energy.png,2,Stage stamina

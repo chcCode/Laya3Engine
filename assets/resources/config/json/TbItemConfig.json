@@ -1,0 +1,25 @@
+{
+  "dataList": [
+    {
+      "id": 1001,
+      "name": "Gold",
+      "icon": "resources/icons/gold.png",
+      "quality": 1,
+      "desc": "Basic currency"
+    },
+    {
+      "id": 1002,
+      "name": "Diamond",
+      "icon": "resources/icons/diamond.png",
+      "quality": 3,
+      "desc": "Premium currency"
+    },
+    {
+      "id": 1003,
+      "name": "Energy",
+      "icon": "resources/icons/energy.png",
+      "quality": 2,
+      "desc": "Stage stamina"
+    }
+  ]
+}

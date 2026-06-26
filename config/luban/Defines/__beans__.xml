@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans>
+    <bean name="ItemConfig" comment="Item configuration">
+        <var name="id" type="int" comment="Unique item id"/>
+        <var name="name" type="string" comment="Display name"/>
+        <var name="icon" type="string" comment="Icon resource path"/>
+        <var name="quality" type="int" comment="Quality level"/>
+        <var name="desc" type="string" comment="Description"/>
+    </bean>
+</beans>

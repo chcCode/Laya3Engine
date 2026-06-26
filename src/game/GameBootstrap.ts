@@ -1,4 +1,5 @@
 import { BaseView, GameApp, GameModule, LayerName } from "../framework";
+import type { ItemConfig } from "./config/ItemConfig";
 
 class WelcomeView extends BaseView {
     private title?: Laya.Text;
@@ -50,11 +51,12 @@ export class GameBootstrap implements GameModule {
     readonly name = "GameBootstrap";
     private welcome?: WelcomeView;
 
-    start(app: GameApp): void {
+    async start(app: GameApp): Promise<void> {
         app.storage.set("lastBootAt", Date.now());
+        const items = await app.configs.loadTable<ItemConfig>("TbItemConfig");
         this.welcome = new WelcomeView();
         this.welcome.open(LayerName.UI);
-        console.log("[Game] framework ready", app);
+        console.log("[Game] framework ready", app, items.require(1001));
     }
 
     dispose(): void {

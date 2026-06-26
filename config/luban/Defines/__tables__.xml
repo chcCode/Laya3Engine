@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tables>
+    <table name="TbItemConfig" value="ItemConfig" input="item.csv" mode="map" index="id"/>
+</tables>
