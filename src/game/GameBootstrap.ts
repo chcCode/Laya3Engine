@@ -1,5 +1,5 @@
 import { BaseView, GameApp, GameModule, LayerName } from "../framework";
-import type { ItemConfig } from "./config/ItemConfig";
+import { GameConfigManager } from "./config/GameConfigManager";
 import { LoginUI, LoginResult } from "./ui/LoginUI";
 
 class WelcomeView extends BaseView {
@@ -53,12 +53,17 @@ export class GameBootstrap implements GameModule {
     private welcome?: WelcomeView;
     private login?: LoginUI;
     private app?: GameApp;
+    private gameConfigs?: GameConfigManager;
 
     async start(app: GameApp): Promise<void> {
         this.app = app;
         app.storage.set("lastBootAt", Date.now());
-        const items = await app.configs.loadTable<ItemConfig>("TbItemConfig");
-        console.log("[Game] framework ready", app, items.require(1001));
+
+        this.gameConfigs = new GameConfigManager(app.configs);
+        await this.gameConfigs.loadAll();
+        app.services.register(GameConfigManager, this.gameConfigs);
+
+        console.log("[Game] framework ready", app, this.gameConfigs.requireItem(1001).name);
 
         this.login = app.ui.open(new LoginUI((result) => this.handleLogin(result)), { layer: LayerName.UI });
     }
@@ -68,6 +73,7 @@ export class GameBootstrap implements GameModule {
         if (this.welcome) this.app?.ui.close(this.welcome, true);
         this.login = undefined;
         this.welcome = undefined;
+        this.gameConfigs = undefined;
         this.app = undefined;
     }
 
