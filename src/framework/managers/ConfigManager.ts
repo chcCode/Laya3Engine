@@ -34,16 +34,38 @@ export class ConfigManager {
     }
 
     private resolveRows<T>(raw: any): T[] {
+        if (!raw) return [];
+
+        if (typeof raw === "string") {
+            return this.resolveRows<T>(JSON.parse(raw));
+        }
+        if (typeof raw?.text === "string") {
+            return this.resolveRows<T>(JSON.parse(raw.text));
+        }
+        if (typeof raw?.data === "string") {
+            return this.resolveRows<T>(JSON.parse(raw.data));
+        }
+        if (raw?.data && typeof raw.data === "object") {
+            const rows = this.resolveRows<T>(raw.data);
+            if (rows.length > 0) return rows;
+        }
         if (Array.isArray(raw)) return raw as T[];
         if (Array.isArray(raw?.dataList)) return raw.dataList as T[];
         if (Array.isArray(raw?.list)) return raw.list as T[];
-        if (raw?.data && typeof raw.data === "object") {
+        if (typeof raw === "object") {
             const rows: T[] = [];
-            for (const key in raw.data) {
-                rows.push(raw.data[key] as T);
+            for (const key in raw) {
+                const row = raw[key];
+                if (row && typeof row === "object") {
+                    if (row.id === undefined) {
+                        row.id = key;
+                    }
+                    rows.push(row as T);
+                }
             }
             return rows;
         }
+
         return [];
     }
 
@@ -51,7 +73,7 @@ export class ConfigManager {
         const map = new Map<number | string, T>();
 
         for (const row of rows) {
-            map.set(row.id, row);
+            this.setRow(map, row.id, row);
         }
 
         return {
@@ -66,5 +88,17 @@ export class ConfigManager {
                 return row;
             },
         };
+    }
+
+    private setRow<T>(map: Map<number | string, T>, id: number | string, row: T): void {
+        map.set(id, row);
+        map.set(String(id), row);
+
+        if (typeof id === "string") {
+            const numberId = Number(id);
+            if (!Number.isNaN(numberId)) {
+                map.set(numberId, row);
+            }
+        }
     }
 }
