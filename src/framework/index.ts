@@ -11,4 +11,5 @@ export * from "./managers/InputManager";
 export * from "./managers/LayerManager";
 export * from "./managers/SceneManager";
 export * from "./managers/StorageManager";
+export * from "./managers/UIManager";
 export * from "./ui/BaseView";

@@ -60,25 +60,27 @@ export class GameBootstrap implements GameModule {
         const items = await app.configs.loadTable<ItemConfig>("TbItemConfig");
         console.log("[Game] framework ready", app, items.require(1001));
 
-        this.login = new LoginUI((result) => this.handleLogin(result));
-        this.login.open(LayerName.UI);
+        this.login = app.ui.open(new LoginUI((result) => this.handleLogin(result)), { layer: LayerName.UI });
     }
 
     dispose(): void {
-        this.login?.close(true);
-        this.welcome?.close(true);
+        if (this.login) this.app?.ui.close(this.login, true);
+        if (this.welcome) this.app?.ui.close(this.welcome, true);
         this.login = undefined;
         this.welcome = undefined;
         this.app = undefined;
     }
 
     private handleLogin(result: LoginResult): void {
-        this.login?.close(true);
-        this.login = undefined;
+        if (!this.app) return;
 
-        this.app?.storage.set("playerName", result.name);
-        this.welcome = new WelcomeView();
-        this.welcome.open(LayerName.UI);
+        if (this.login) {
+            this.app.ui.close(this.login, true);
+            this.login = undefined;
+        }
+
+        this.app.storage.set("playerName", result.name);
+        this.welcome = this.app.ui.open(new WelcomeView(), { layer: LayerName.UI });
         console.log("[Game] login", result);
     }
 }

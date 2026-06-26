@@ -10,6 +10,7 @@ import { InputManager } from "../managers/InputManager";
 import { LayerManager } from "../managers/LayerManager";
 import { SceneManager } from "../managers/SceneManager";
 import { StorageManager } from "../managers/StorageManager";
+import { UIManager } from "../managers/UIManager";
 
 export interface FrameworkEvents {
     "app:ready": GameApp;
@@ -68,6 +69,10 @@ export class GameApp {
         return this.services.get(StorageManager);
     }
 
+    get ui(): UIManager {
+        return this.services.get(UIManager);
+    }
+
     configure(config: Partial<GameConfig>): this {
         Object.assign(this.config, config);
         return this;
@@ -124,6 +129,7 @@ export class GameApp {
         const layers = this.services.register(LayerManager, new LayerManager());
         layers.init(Laya.stage);
 
+        this.services.register(UIManager, new UIManager(layers));
         this.services.register(SceneManager, new SceneManager(this));
         this.input.init(Laya.stage);
     }
