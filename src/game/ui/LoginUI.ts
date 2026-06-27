@@ -17,7 +17,8 @@ export class LoginUI extends BaseView {
     ) {
         super();
         this.name = "LoginUI";
-        this.mouseThrough = false;
+        // 容器自身不抢占点击，交给 prefab 中的输入框和按钮处理命中。
+        this.mouseThrough = true;
         this.addChild(prefabRoot);
     }
 
@@ -42,6 +43,11 @@ export class LoginUI extends BaseView {
         this.nameInput = panel?.getChildByName<Laya.Input>("NameInput");
         this.loginButton = panel?.getChildByName<Laya.Sprite>("LoginButton");
         this.errorText = panel?.getChildByName<Laya.Text>("ErrorText");
+
+        if (this.loginButton) {
+            // 命中区跟随 prefab 中配置的按钮尺寸，避免 Text 空内容导致点击区域异常。
+            this.loginButton.hitArea = new Laya.Rectangle(0, 0, this.loginButton.width, this.loginButton.height);
+        }
     }
 
     private submit(): void {

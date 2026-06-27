@@ -21,17 +21,25 @@ export type PrefabViewFactory<T extends BaseView> = (prefabRoot: Laya.Node) => T
 
 /** ???? UI ???????????????????? */
 export class UIManager {
+    private static readonly DefaultRootPrefabUrl = "resources/prefabs/UIRoot.lh";
+
     private readonly opened = new Map<string, BaseView>();
-    private readonly root = new Laya.Sprite();
     private readonly uiLayers = new Map<UILayerName, Laya.Sprite>();
     private readonly layerOrder = [UILayerName.Low, UILayerName.Middle, UILayerName.High];
+    private root?: Laya.Sprite;
 
-    constructor(private readonly layers: LayerManager) {
-        this.initRoot();
+    constructor(
+        private readonly layers: LayerManager,
+        private readonly rootPrefabUrl = UIManager.DefaultRootPrefabUrl,
+    ) {
     }
 
     /** UI ????????????????? UI ?? */
     getRoot(): Laya.Sprite {
+        if (!this.root) {
+            throw new Error("UI root is not initialized.");
+        }
+
         return this.root;
     }
 
@@ -43,6 +51,20 @@ export class UIManager {
         }
 
         return node;
+    }
+
+    /** 从 prefab 初始化 UI 根节点和低/中/高三层，需在打开 UI 前完成。 */
+    async init(): Promise<void> {
+        if (this.root) return;
+
+        const root = await Laya.Prefab.instantiate<Laya.Sprite>(this.rootPrefabUrl);
+        this.root = root;
+        this.root.name = "UIRoot";
+        this.root.mouseThrough = true;
+        this.layers.add(LayerName.UI, this.root);
+        this.bindPrefabLayers();
+        this.resizeRoot();
+        Laya.stage.on(Laya.Event.RESIZE, this, this.resizeRoot);
     }
 
     /** ?? UI ?????? UI ?????????????? */
@@ -112,8 +134,9 @@ export class UIManager {
     dispose(): void {
         this.closeAll(true);
         Laya.stage.off(Laya.Event.RESIZE, this, this.resizeRoot);
-        this.root.removeSelf();
-        this.root.destroy(true);
+        this.root?.removeSelf();
+        this.root?.destroy(true);
+        this.root = undefined;
         this.uiLayers.clear();
     }
 
@@ -165,32 +188,29 @@ export class UIManager {
     /** ? UI ?????? UI ??????? */
     bringLayerToTop(layer: UILayerName): void {
         const layerNode = this.getLayer(layer);
-        this.root.setChildIndex(layerNode, this.root.numChildren - 1);
+        const root = this.getRoot();
+        root.setChildIndex(layerNode, root.numChildren - 1);
     }
 
-    private initRoot(): void {
-        this.root.name = "UIRoot";
-        this.root.mouseThrough = true;
-        this.layers.add(LayerName.UI, this.root);
-
+    private bindPrefabLayers(): void {
+        const root = this.getRoot();
         for (const layer of this.layerOrder) {
-            const node = new Laya.Sprite();
-            node.name = `${layer}UILayer`;
+            const node = root.getChildByName<Laya.Sprite>(`${layer}UILayer`);
+            if (!node) {
+                throw new Error(`UI layer node not found in prefab: ${layer}UILayer`);
+            }
+
             node.mouseThrough = true;
-            this.root.addChild(node);
             this.uiLayers.set(layer, node);
         }
-
-        this.resizeRoot();
-        Laya.stage.on(Laya.Event.RESIZE, this, this.resizeRoot);
     }
 
     private resizeRoot(): void {
-        this.root.pos(0, 0);
+        if (!this.root) return;
+
         this.root.size(Laya.stage.width, Laya.stage.height);
 
         for (const layer of this.uiLayers.values()) {
-            layer.pos(0, 0);
             layer.size(this.root.width, this.root.height);
         }
     }

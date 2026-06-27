@@ -107,7 +107,7 @@ export class GameApp {
 
         this.configure(config);
         this.applyStageConfig();
-        this.registerDefaultServices();
+        await this.registerDefaultServices();
 
         for (const module of this.modules) {
             await module.init?.(this);
@@ -141,7 +141,7 @@ export class GameApp {
         this.booted = false;
     }
 
-    private registerDefaultServices(): void {
+    private async registerDefaultServices(): Promise<void> {
         this.services.register(AssetManager, new AssetManager());
         this.services.register(AudioManager, new AudioManager());
         this.services.register(ConfigManager, new ConfigManager());
@@ -151,7 +151,8 @@ export class GameApp {
         const layers = this.services.register(LayerManager, new LayerManager());
         layers.init(Laya.stage);
 
-        this.services.register(UIManager, new UIManager(layers));
+        const ui = this.services.register(UIManager, new UIManager(layers));
+        await ui.init();
         this.services.register(SceneManager, new SceneManager(this));
         this.input.init(Laya.stage);
     }

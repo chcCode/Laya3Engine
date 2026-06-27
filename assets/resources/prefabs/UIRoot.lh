@@ -1,0 +1,35 @@
+{
+  "_$ver": 1,
+  "_$id": "ui_root_prefab",
+  "_$type": "Sprite",
+  "name": "UIRoot",
+  "width": 1334,
+  "height": 750,
+  "mouseThrough": true,
+  "_$child": [
+    {
+      "_$id": "ui_layer_low",
+      "_$type": "Sprite",
+      "name": "lowUILayer",
+      "width": 1334,
+      "height": 750,
+      "mouseThrough": true
+    },
+    {
+      "_$id": "ui_layer_middle",
+      "_$type": "Sprite",
+      "name": "middleUILayer",
+      "width": 1334,
+      "height": 750,
+      "mouseThrough": true
+    },
+    {
+      "_$id": "ui_layer_high",
+      "_$type": "Sprite",
+      "name": "highUILayer",
+      "width": 1334,
+      "height": 750,
+      "mouseThrough": true
+    }
+  ]
+}

@@ -5,7 +5,7 @@
   "name": "LoginUIPrefab",
   "width": 1334,
   "height": 750,
-  "mouseThrough": false,
+  "mouseThrough": true,
   "_$child": [
     {
       "_$id": "login_bg",
@@ -27,7 +27,8 @@
       "width": 520,
       "height": 360,
       "bgColor": "#243047",
-      "mouseEnabled": false,
+      "mouseEnabled": true,
+      "mouseThrough": true,
       "_$child": [
         {
           "_$id": "login_accent",
