@@ -133,6 +133,7 @@ export class GameApp {
             module.dispose?.();
         }
 
+        this.scenes.closeCurrent({ destroyCurrent: true });
         this.events.clear();
         this.services.clear();
         this.modules.length = 0;
