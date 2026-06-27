@@ -4,6 +4,7 @@ export interface ConfigTable<T> {
     require(id: number | string): T;
 }
 
+/** 通用配置加载器，负责把 Luban JSON 解析成按 id 查询的配置表。 */
 export class ConfigManager {
     private readonly tables = new Map<string, ConfigTable<any>>();
 
@@ -36,6 +37,7 @@ export class ConfigManager {
     private resolveRows<T>(raw: any): T[] {
         if (!raw) return [];
 
+        // Laya 3 的 Loader.JSON 可能返回 TextResource，真实 JSON 在 data 字段中。
         if (typeof raw === "string") {
             return this.resolveRows<T>(JSON.parse(raw));
         }
@@ -57,6 +59,7 @@ export class ConfigManager {
             for (const key in raw) {
                 const row = raw[key];
                 if (row && typeof row === "object") {
+                    // 兼容 map 结构导出：key 作为配置 id。
                     if (row.id === undefined) {
                         row.id = key;
                     }
@@ -91,6 +94,7 @@ export class ConfigManager {
     }
 
     private setRow<T>(map: Map<number | string, T>, id: number | string, row: T): void {
+        // 同时登记 number 和 string key，避免 CSV/JSON 类型差异导致查不到。
         map.set(id, row);
         map.set(String(id), row);
 

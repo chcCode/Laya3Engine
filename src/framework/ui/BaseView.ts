@@ -5,6 +5,7 @@ export abstract class BaseView extends Laya.Sprite {
     protected readonly app = GameApp.I;
     protected readonly disposers: Array<() => void> = [];
 
+    /** 打开界面时统一交给 UIManager，便于层级和单例管理。 */
     open(layer: LayerName = LayerName.UI): void {
         this.app.ui.open(this, { layer });
     }
@@ -21,6 +22,7 @@ export abstract class BaseView extends Laya.Sprite {
         }
     }
 
+    /** 由 UIManager 在界面真正挂到层级后回调。 */
     onUIOpened(layer: LayerName): void {
         this.onOpen(layer);
         this.app.events.emit("ui:opened", this.name || this.constructor.name);

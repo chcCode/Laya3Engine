@@ -1,6 +1,7 @@
 import { ConfigManager, ConfigTable } from "../../framework";
 import type { ItemConfig } from "./ItemConfig";
 
+/** 游戏侧配置门面，业务代码只通过这里访问具体配置表。 */
 export class GameConfigManager {
     private itemTable?: ConfigTable<ItemConfig>;
 
@@ -8,6 +9,7 @@ export class GameConfigManager {
     }
 
     async loadAll(): Promise<void> {
+        // 新增配置表时统一在这里加载，避免业务模块散落表名字符串。
         this.itemTable = await this.configs.loadTable<ItemConfig>("TbItemConfig");
     }
 

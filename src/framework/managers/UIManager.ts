@@ -2,11 +2,15 @@ import type { BaseView } from "../ui/BaseView";
 import { LayerManager, LayerName } from "./LayerManager";
 
 export interface UIOptions {
+    /** UI 挂载层级，默认挂到普通 UI 层。 */
     layer?: LayerName;
+    /** 是否按 view.name 保持单例，默认 true。 */
     singleton?: boolean;
+    /** 打开前是否先关闭同名 UI。 */
     closeExisting?: boolean;
 }
 
+/** 统一管理 UI 的打开、关闭和层级顺序。 */
 export class UIManager {
     private readonly opened = new Map<string, BaseView>();
 
@@ -17,6 +21,7 @@ export class UIManager {
         const key = this.getKey(view);
         const layer = options.layer || LayerName.UI;
 
+        // 默认同名 UI 只保留一个，避免重复打开多个相同界面。
         if (options.closeExisting) {
             this.close(key, true);
         } else if (options.singleton !== false && this.opened.has(key)) {
@@ -42,6 +47,7 @@ export class UIManager {
     }
 
     closeLayer(layer: LayerName, destroy = false): void {
+        // 复制一份列表再遍历，避免 close 过程中修改 Map 影响迭代。
         for (const [key, view] of [...this.opened]) {
             if (view.parent === this.layers.get(layer)) {
                 view.close(destroy);
@@ -58,6 +64,7 @@ export class UIManager {
     }
 
     unregister(view: BaseView): void {
+        // 支持 BaseView.close() 被直接调用时自动回收登记状态。
         const key = this.getKey(view);
         if (this.opened.get(key) === view) {
             this.opened.delete(key);
