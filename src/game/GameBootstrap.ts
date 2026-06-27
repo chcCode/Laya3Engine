@@ -5,6 +5,9 @@ import { LoginUI, LoginResult } from "./ui/LoginUI";
 class WelcomeView extends BaseView {
     private title?: Laya.Text;
     private tip?: Laya.Text;
+    private switchButton?: Laya.Sprite;
+    private switchLabel?: Laya.Text;
+    private sceneStatus?: Laya.Text;
 
     constructor() {
         super();
@@ -20,6 +23,7 @@ class WelcomeView extends BaseView {
 
     protected onClose(): void {
         Laya.stage.off(Laya.Event.RESIZE, this, this.layout);
+        this.switchButton?.off(Laya.Event.CLICK, this, this.switchDemoScene);
     }
 
     private build(): void {
@@ -37,6 +41,28 @@ class WelcomeView extends BaseView {
         this.tip.wordWrap = true;
         this.tip.width = 640;
         this.addChild(this.tip);
+
+        this.switchButton = new Laya.Sprite();
+        this.switchButton.size(360, 58);
+        this.switchButton.mouseEnabled = true;
+        this.switchButton.on(Laya.Event.CLICK, this, this.switchDemoScene);
+        this.addChild(this.switchButton);
+
+        this.switchLabel = new Laya.Text();
+        this.switchLabel.text = "切换示例场景";
+        this.switchLabel.fontSize = 24;
+        this.switchLabel.bold = true;
+        this.switchLabel.color = "#ffffff";
+        this.switchLabel.mouseEnabled = false;
+        this.switchButton.addChild(this.switchLabel);
+
+        this.sceneStatus = new Laya.Text();
+        this.sceneStatus.text = "当前场景：启动场景";
+        this.sceneStatus.fontSize = 20;
+        this.sceneStatus.color = "#9ee7ff";
+        this.sceneStatus.align = "center";
+        this.sceneStatus.width = 640;
+        this.addChild(this.sceneStatus);
     }
 
     private layout(): void {
@@ -45,6 +71,29 @@ class WelcomeView extends BaseView {
         this.size(Laya.stage.width, Laya.stage.height);
         this.title.pos((this.width - this.title.textWidth) / 2, this.height * 0.35);
         this.tip.pos((this.width - this.tip.width) / 2, this.title.y + 72);
+
+        if (this.switchButton && this.switchLabel && this.sceneStatus) {
+            this.switchButton.pos((this.width - this.switchButton.width) / 2, this.tip.y + 86);
+            this.switchButton.graphics.clear();
+            this.switchButton.graphics.drawRect(0, 0, this.switchButton.width, this.switchButton.height, "#0f766e");
+            this.switchLabel.pos(
+                (this.switchButton.width - this.switchLabel.textWidth) / 2,
+                (this.switchButton.height - this.switchLabel.textHeight) / 2,
+            );
+            this.sceneStatus.pos((this.width - this.sceneStatus.width) / 2, this.switchButton.y + 76);
+        }
+    }
+
+    private async switchDemoScene(): Promise<void> {
+        if (!this.sceneStatus) return;
+
+        this.sceneStatus.text = "正在切换到 DemoScene...";
+        await this.app.scenes.switchTo("resources/scenes/DemoScene.ls", {
+            name: "DemoScene",
+            closeUI: false,
+            clearCurrentSceneRes: true,
+        });
+        this.sceneStatus.text = `当前场景：${this.app.scenes.currentName}`;
     }
 }
 
