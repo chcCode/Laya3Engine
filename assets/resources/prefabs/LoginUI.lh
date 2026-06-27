@@ -8,27 +8,59 @@
   "mouseThrough": false,
   "_$child": [
     {
+      "_$id": "login_bg",
+      "_$type": "Text",
+      "name": "Background",
+      "text": "",
+      "width": 1334,
+      "height": 750,
+      "bgColor": "#121826",
+      "mouseEnabled": false
+    },
+    {
       "_$id": "login_panel",
-      "_$type": "Sprite",
+      "_$type": "Text",
       "name": "Panel",
+      "text": "",
+      "x": 407,
+      "y": 195,
       "width": 520,
       "height": 360,
+      "bgColor": "#243047",
+      "mouseEnabled": false,
       "_$child": [
+        {
+          "_$id": "login_accent",
+          "_$type": "Text",
+          "name": "Accent",
+          "text": "",
+          "x": 0,
+          "y": 0,
+          "width": 520,
+          "height": 6,
+          "bgColor": "#5eead4",
+          "mouseEnabled": false
+        },
         {
           "_$id": "login_title",
           "_$type": "Text",
           "name": "Title",
           "text": "登录游戏",
+          "x": 140,
+          "y": 44,
           "fontSize": 40,
           "color": "#ffffff",
           "bold": true,
           "width": 240,
-          "height": 54
+          "height": 54,
+          "align": "center"
         },
         {
           "_$id": "login_name_input",
           "_$type": "Input",
           "name": "NameInput",
+          "x": 50,
+          "y": 126,
           "prompt": "请输入名字",
           "promptColor": "#77839a",
           "fontSize": 26,
@@ -47,10 +79,14 @@
         },
         {
           "_$id": "login_button",
-          "_$type": "Sprite",
+          "_$type": "Text",
           "name": "LoginButton",
+          "text": "",
+          "x": 50,
+          "y": 212,
           "width": 420,
           "height": 64,
+          "bgColor": "#2563eb",
           "mouseEnabled": true,
           "_$child": [
             {
@@ -58,11 +94,14 @@
               "_$type": "Text",
               "name": "LoginLabel",
               "text": "登录",
+              "x": 170,
+              "y": 13,
               "fontSize": 28,
               "color": "#ffffff",
               "bold": true,
               "width": 80,
               "height": 38,
+              "align": "center",
               "mouseEnabled": false
             }
           ]
@@ -72,6 +111,8 @@
           "_$type": "Text",
           "name": "ErrorText",
           "text": "",
+          "x": 50,
+          "y": 292,
           "fontSize": 20,
           "color": "#ffb4a8",
           "align": "center",
