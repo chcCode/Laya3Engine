@@ -166,7 +166,7 @@ export class SceneManager {
 
     private applyScene(scene: Laya.Scene, url: string, options: SceneOpenOptions): void {
         if (options.closeUI) {
-            this.app.ui.closeLayer(LayerName.UI, true);
+            this.app.ui.closeAll(true);
         }
 
         this.closeCurrent(options);

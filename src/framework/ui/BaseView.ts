@@ -1,12 +1,12 @@
 import { GameApp } from "../core/GameApp";
-import { LayerName } from "../managers/LayerManager";
+import { UILayerName } from "../managers/UIManager";
 
 export abstract class BaseView extends Laya.Sprite {
     protected readonly app = GameApp.I;
     protected readonly disposers: Array<() => void> = [];
 
-    /** 打开界面时统一交给 UIManager，便于层级和单例管理。 */
-    open(layer: LayerName = LayerName.UI): void {
+    /** ????????? UIManager????? Middle ?? */
+    open(layer: UILayerName = UILayerName.Middle): void {
         this.app.ui.open(this, { layer });
     }
 
@@ -22,22 +22,22 @@ export abstract class BaseView extends Laya.Sprite {
         }
     }
 
-    /** 由 UIManager 在界面真正挂到层级后回调。 */
-    onUIOpened(layer: LayerName): void {
+    /** ? UIManager ??????? UI ?????? */
+    onUIOpened(layer: UILayerName): void {
         this.onOpen(layer);
         this.app.events.emit("ui:opened", this.name || this.constructor.name);
     }
 
-    /** 保存外部监听清理函数，关闭界面时统一执行。 */
+    /** ????????????????????? */
     protected listen<T>(dispose: () => void): void {
         this.disposers.push(dispose);
     }
 
-    /** 界面打开后的扩展点，子类可在这里创建节点和注册事件。 */
-    protected onOpen(_layer?: LayerName): void {
+    /** ?????????????????????????? */
+    protected onOpen(_layer?: UILayerName): void {
     }
 
-    /** 界面关闭后的扩展点，子类可在这里解绑自身事件。 */
+    /** ??????????????????????? */
     protected onClose(): void {
     }
 }

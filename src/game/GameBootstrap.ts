@@ -1,4 +1,4 @@
-import { GameApp, GameModule, LayerName } from "../framework";
+import { GameApp, GameModule, UILayerName } from "../framework";
 import { GameConfigManager } from "./config/GameConfigManager";
 import { LoginUI, LoginResult } from "./ui/LoginUI";
 import { WelcomeView } from "./ui/WelcomeView";
@@ -23,7 +23,7 @@ export class GameBootstrap implements GameModule {
         this.login = await app.ui.openPrefab(
             "resources/prefabs/LoginUI.lh",
             (prefabRoot) => new LoginUI(prefabRoot as Laya.Sprite, (result) => this.handleLogin(result)),
-            { layer: LayerName.UI },
+            { layer: UILayerName.Middle },
         );
     }
 
@@ -48,7 +48,7 @@ export class GameBootstrap implements GameModule {
         this.welcome = await this.app.ui.openPrefab(
             "resources/prefabs/WelcomeView.lh",
             (prefabRoot) => new WelcomeView(prefabRoot as Laya.Sprite),
-            { layer: LayerName.UI },
+            { layer: UILayerName.Middle },
         );
         console.log("[Game] login", result);
     }

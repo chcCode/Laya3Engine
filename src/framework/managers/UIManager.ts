@@ -1,30 +1,56 @@
 import type { BaseView } from "../ui/BaseView";
 import { LayerManager, LayerName } from "./LayerManager";
 
+/** UI ?????????????? */
+export enum UILayerName {
+    Low = "low",
+    Middle = "middle",
+    High = "high",
+}
+
 export interface UIOptions {
-    /** UI 挂载层级，默认挂到普通 UI 层。 */
-    layer?: LayerName;
-    /** 是否按 view.name 保持单例，默认 true。 */
+    /** UI ????????? Middle ?? */
+    layer?: UILayerName;
+    /** ??? view.name ??????? true? */
     singleton?: boolean;
-    /** 打开前是否先关闭同名 UI。 */
+    /** ?????????? UI? */
     closeExisting?: boolean;
 }
 
 export type PrefabViewFactory<T extends BaseView> = (prefabRoot: Laya.Node) => T;
 
-/** 统一管理 UI 的打开、关闭和层级顺序。 */
+/** ???? UI ???????????????????? */
 export class UIManager {
     private readonly opened = new Map<string, BaseView>();
+    private readonly root = new Laya.Sprite();
+    private readonly uiLayers = new Map<UILayerName, Laya.Sprite>();
+    private readonly layerOrder = [UILayerName.Low, UILayerName.Middle, UILayerName.High];
 
     constructor(private readonly layers: LayerManager) {
+        this.initRoot();
     }
 
-    /** 打开 UI 并挂载到指定层级；默认同名界面保持单例。 */
+    /** UI ????????????????? UI ?? */
+    getRoot(): Laya.Sprite {
+        return this.root;
+    }
+
+    /** ?? UI ??????? */
+    getLayer(layer: UILayerName = UILayerName.Middle): Laya.Sprite {
+        const node = this.uiLayers.get(layer);
+        if (!node) {
+            throw new Error(`UI layer not found: ${layer}`);
+        }
+
+        return node;
+    }
+
+    /** ?? UI ?????? UI ?????????????? */
     open<T extends BaseView>(view: T, options: UIOptions = {}): T {
         const key = this.getKey(view);
-        const layer = options.layer || LayerName.UI;
+        const layer = options.layer || UILayerName.Middle;
 
-        // 默认同名 UI 只保留一个，避免重复打开多个相同界面。
+        // ???? UI ???????????????????
         if (options.closeExisting) {
             this.close(key, true);
         } else if (options.singleton !== false && this.opened.has(key)) {
@@ -33,13 +59,13 @@ export class UIManager {
             return current;
         }
 
-        this.layers.add(layer, view);
+        this.getLayer(layer).addChild(view);
         this.opened.set(key, view);
         view.onUIOpened(layer);
         return view;
     }
 
-    /** 实例化 prefab，并用业务 View 包装后打开。 */
+    /** ??? prefab????? View ?????? */
     async openPrefab<T extends BaseView>(
         url: string,
         createView: PrefabViewFactory<T>,
@@ -50,7 +76,7 @@ export class UIManager {
         return this.open(view, options);
     }
 
-    /** 关闭指定 UI，可传界面实例或界面名称。 */
+    /** ???? UI????????????? */
     close(viewOrName: BaseView | string, destroy = false): boolean {
         const key = typeof viewOrName === "string" ? viewOrName : this.getKey(viewOrName);
         const view = this.opened.get(key);
@@ -61,18 +87,20 @@ export class UIManager {
         return true;
     }
 
-    /** 关闭指定层级上的所有已登记 UI。 */
-    closeLayer(layer: LayerName, destroy = false): void {
-        // 复制一份列表再遍历，避免 close 过程中修改 Map 影响迭代。
+    /** ???? UI ??????????? UI? */
+    closeLayer(layer: UILayerName = UILayerName.Middle, destroy = false): void {
+        const layerNode = this.getLayer(layer);
+
+        // ???????????? close ????? Map ?????
         for (const [key, view] of [...this.opened]) {
-            if (view.parent === this.layers.get(layer)) {
+            if (view.parent === layerNode) {
                 view.close(destroy);
                 this.opened.delete(key);
             }
         }
     }
 
-    /** 关闭所有已登记 UI。 */
+    /** ??????? UI? */
     closeAll(destroy = false): void {
         for (const [key, view] of [...this.opened]) {
             view.close(destroy);
@@ -80,27 +108,36 @@ export class UIManager {
         }
     }
 
-    /** 从管理器中移除 UI 记录，不负责销毁节点。 */
+    /** ?? UI ???????????? GameApp.dispose ???? */
+    dispose(): void {
+        this.closeAll(true);
+        Laya.stage.off(Laya.Event.RESIZE, this, this.resizeRoot);
+        this.root.removeSelf();
+        this.root.destroy(true);
+        this.uiLayers.clear();
+    }
+
+    /** ??????? UI ??????????? */
     unregister(view: BaseView): void {
-        // 支持 BaseView.close() 被直接调用时自动回收登记状态。
+        // ?? BaseView.close() ???????????????
         const key = this.getKey(view);
         if (this.opened.get(key) === view) {
             this.opened.delete(key);
         }
     }
 
-    /** 根据界面名称获取已打开 UI。 */
+    /** ??????????? UI? */
     get<T extends BaseView>(name: string): T | undefined {
         return this.opened.get(name) as T | undefined;
     }
 
-    /** 判断 UI 是否已经打开。 */
+    /** ?? UI ??????? */
     has(viewOrName: BaseView | string): boolean {
         const key = typeof viewOrName === "string" ? viewOrName : this.getKey(viewOrName);
         return this.opened.has(key);
     }
 
-    /** 将 UI 移到所在层级的最上方。 */
+    /** ? UI ???? UI ??????? */
     bringToTop(viewOrName: BaseView | string): void {
         const view = typeof viewOrName === "string" ? this.opened.get(viewOrName) : viewOrName;
         if (!view?.parent) return;
@@ -108,7 +145,7 @@ export class UIManager {
         view.parent.setChildIndex(view, view.parent.numChildren - 1);
     }
 
-    /** 将 UI 移到所在层级的最下方。 */
+    /** ? UI ???? UI ??????? */
     sendToBottom(viewOrName: BaseView | string): void {
         const view = typeof viewOrName === "string" ? this.opened.get(viewOrName) : viewOrName;
         if (!view?.parent) return;
@@ -116,7 +153,7 @@ export class UIManager {
         view.parent.setChildIndex(view, 0);
     }
 
-    /** 设置 UI 在所在层级中的显示顺序。 */
+    /** ?? UI ??? UI ????????? */
     setViewIndex(viewOrName: BaseView | string, index: number): void {
         const view = typeof viewOrName === "string" ? this.opened.get(viewOrName) : viewOrName;
         if (!view?.parent) return;
@@ -125,12 +162,37 @@ export class UIManager {
         view.parent.setChildIndex(view, safeIndex);
     }
 
-    /** 将整个显示层移动到舞台最上方。 */
-    bringLayerToTop(layer: LayerName): void {
-        const layerNode = this.layers.get(layer);
-        if (!layerNode.parent) return;
+    /** ? UI ?????? UI ??????? */
+    bringLayerToTop(layer: UILayerName): void {
+        const layerNode = this.getLayer(layer);
+        this.root.setChildIndex(layerNode, this.root.numChildren - 1);
+    }
 
-        layerNode.parent.setChildIndex(layerNode, layerNode.parent.numChildren - 1);
+    private initRoot(): void {
+        this.root.name = "UIRoot";
+        this.root.mouseThrough = true;
+        this.layers.add(LayerName.UI, this.root);
+
+        for (const layer of this.layerOrder) {
+            const node = new Laya.Sprite();
+            node.name = `${layer}UILayer`;
+            node.mouseThrough = true;
+            this.root.addChild(node);
+            this.uiLayers.set(layer, node);
+        }
+
+        this.resizeRoot();
+        Laya.stage.on(Laya.Event.RESIZE, this, this.resizeRoot);
+    }
+
+    private resizeRoot(): void {
+        this.root.pos(0, 0);
+        this.root.size(Laya.stage.width, Laya.stage.height);
+
+        for (const layer of this.uiLayers.values()) {
+            layer.pos(0, 0);
+            layer.size(this.root.width, this.root.height);
+        }
     }
 
     private getKey(view: BaseView): string {

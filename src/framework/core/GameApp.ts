@@ -134,6 +134,7 @@ export class GameApp {
         }
 
         this.scenes.closeCurrent({ destroyCurrent: true });
+        this.ui.dispose();
         this.events.clear();
         this.services.clear();
         this.modules.length = 0;
