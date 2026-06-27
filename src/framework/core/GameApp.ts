@@ -12,6 +12,7 @@ import { SceneManager } from "../managers/SceneManager";
 import { StorageManager } from "../managers/StorageManager";
 import { UIManager } from "../managers/UIManager";
 
+/** 框架内置事件定义，业务可通过索引签名扩展自定义事件。 */
 export interface FrameworkEvents {
     "app:ready": GameApp;
     "app:pause": void;
@@ -22,9 +23,11 @@ export interface FrameworkEvents {
     [key: string]: unknown;
 }
 
+/** 游戏应用根对象，负责生命周期、服务、模块和主循环。 */
 export class GameApp {
     private static instance?: GameApp;
 
+    /** 全局单例入口。 */
     static get I(): GameApp {
         if (!this.instance) {
             this.instance = new GameApp();
@@ -33,56 +36,72 @@ export class GameApp {
         return this.instance;
     }
 
+    /** 全局事件总线。 */
     readonly events = new EventBus<FrameworkEvents>();
+    /** 服务容器，保存框架管理器和业务服务。 */
     readonly services = new ServiceLocator();
+    /** 全局状态机。 */
     readonly states = new StateMachine();
+    /** 当前应用配置。 */
     readonly config: GameConfig = { ...DefaultGameConfig };
+    /** 已挂载的游戏模块。 */
     readonly modules: GameModule[] = [];
 
     private booted = false;
 
+    /** 资源管理器。 */
     get assets(): AssetManager {
         return this.services.get(AssetManager);
     }
 
+    /** 音频管理器。 */
     get audio(): AudioManager {
         return this.services.get(AudioManager);
     }
 
+    /** 输入管理器。 */
     get input(): InputManager {
         return this.services.get(InputManager);
     }
 
+    /** 通用配置加载器。 */
     get configs(): ConfigManager {
         return this.services.get(ConfigManager);
     }
 
+    /** 显示层级管理器。 */
     get layers(): LayerManager {
         return this.services.get(LayerManager);
     }
 
+    /** 场景管理器。 */
     get scenes(): SceneManager {
         return this.services.get(SceneManager);
     }
 
+    /** 本地存档管理器。 */
     get storage(): StorageManager {
         return this.services.get(StorageManager);
     }
 
+    /** UI 管理器。 */
     get ui(): UIManager {
         return this.services.get(UIManager);
     }
 
+    /** 合并应用配置，可在 boot 前调用。 */
     configure(config: Partial<GameConfig>): this {
         Object.assign(this.config, config);
         return this;
     }
 
+    /** 挂载游戏模块，模块会在 boot 中按顺序初始化和启动。 */
     use(module: GameModule): this {
         this.modules.push(module);
         return this;
     }
 
+    /** 启动框架，只会执行一次。 */
     async boot(config: Partial<GameConfig> = {}): Promise<void> {
         if (this.booted) return;
 
@@ -105,6 +124,7 @@ export class GameApp {
         this.events.emit("app:ready", this);
     }
 
+    /** 销毁框架，清理计时器、模块、事件和服务。 */
     dispose(): void {
         Laya.timer.clear(this, this.update);
         Laya.stage.off(Laya.Event.VISIBILITY_CHANGE, this, this.handleVisibilityChange);

@@ -28,13 +28,16 @@ export abstract class BaseView extends Laya.Sprite {
         this.app.events.emit("ui:opened", this.name || this.constructor.name);
     }
 
+    /** 保存外部监听清理函数，关闭界面时统一执行。 */
     protected listen<T>(dispose: () => void): void {
         this.disposers.push(dispose);
     }
 
+    /** 界面打开后的扩展点，子类可在这里创建节点和注册事件。 */
     protected onOpen(_layer?: LayerName): void {
     }
 
+    /** 界面关闭后的扩展点，子类可在这里解绑自身事件。 */
     protected onClose(): void {
     }
 }

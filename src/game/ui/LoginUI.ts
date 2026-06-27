@@ -1,9 +1,11 @@
 import { BaseView, LayerName } from "../../framework";
 
 export interface LoginResult {
+    /** 玩家输入的名字。 */
     name: string;
 }
 
+/** 登录界面，负责收集玩家名字并回调登录结果。 */
 export class LoginUI extends BaseView {
     private panel = new Laya.Sprite();
     private title = new Laya.Text();
@@ -18,6 +20,7 @@ export class LoginUI extends BaseView {
         this.mouseThrough = false;
     }
 
+    /** 打开后延迟聚焦输入框。 */
     open(layer: LayerName = LayerName.UI): void {
         super.open(layer);
         Laya.timer.callLater(this, () => this.nameInput.focus = true);

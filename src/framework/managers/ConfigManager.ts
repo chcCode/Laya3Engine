@@ -1,6 +1,9 @@
 export interface ConfigTable<T> {
+    /** 表内所有配置行。 */
     readonly list: T[];
+    /** 按 id 获取配置；找不到返回 undefined。 */
     get(id: number | string): T | undefined;
+    /** 按 id 获取配置；找不到时抛出错误。 */
     require(id: number | string): T;
 }
 
@@ -8,6 +11,7 @@ export interface ConfigTable<T> {
 export class ConfigManager {
     private readonly tables = new Map<string, ConfigTable<any>>();
 
+    /** 加载配置表，默认路径为 resources/config/json/{name}.json。 */
     async loadTable<T extends { id: number | string }>(name: string, url?: string): Promise<ConfigTable<T>> {
         const path = url || `resources/config/json/${name}.json`;
         const raw = await Laya.loader.load(path, undefined, undefined, Laya.Loader.JSON);
@@ -17,6 +21,7 @@ export class ConfigManager {
         return table;
     }
 
+    /** 获取已加载的配置表；未加载时抛出错误。 */
     getTable<T>(name: string): ConfigTable<T> {
         const table = this.tables.get(name);
         if (!table) {
@@ -26,10 +31,12 @@ export class ConfigManager {
         return table as ConfigTable<T>;
     }
 
+    /** 判断配置表是否已加载。 */
     hasTable(name: string): boolean {
         return this.tables.has(name);
     }
 
+    /** 清空全部已加载配置表缓存。 */
     clear(): void {
         this.tables.clear();
     }
