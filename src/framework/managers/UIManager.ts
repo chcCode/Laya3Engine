@@ -10,6 +10,8 @@ export interface UIOptions {
     closeExisting?: boolean;
 }
 
+export type PrefabViewFactory<T extends BaseView> = (prefabRoot: Laya.Node) => T;
+
 /** 统一管理 UI 的打开、关闭和层级顺序。 */
 export class UIManager {
     private readonly opened = new Map<string, BaseView>();
@@ -35,6 +37,17 @@ export class UIManager {
         this.opened.set(key, view);
         view.onUIOpened(layer);
         return view;
+    }
+
+    /** 实例化 prefab，并用业务 View 包装后打开。 */
+    async openPrefab<T extends BaseView>(
+        url: string,
+        createView: PrefabViewFactory<T>,
+        options: UIOptions = {},
+    ): Promise<T> {
+        const prefabRoot = await Laya.Prefab.instantiate<Laya.Node>(url);
+        const view = createView(prefabRoot);
+        return this.open(view, options);
     }
 
     /** 关闭指定 UI，可传界面实例或界面名称。 */

@@ -1,0 +1,84 @@
+{
+  "_$ver": 1,
+  "_$id": "login_prefab_root",
+  "_$type": "Sprite",
+  "name": "LoginUIPrefab",
+  "width": 1334,
+  "height": 750,
+  "mouseThrough": false,
+  "_$child": [
+    {
+      "_$id": "login_panel",
+      "_$type": "Sprite",
+      "name": "Panel",
+      "width": 520,
+      "height": 360,
+      "_$child": [
+        {
+          "_$id": "login_title",
+          "_$type": "Text",
+          "name": "Title",
+          "text": "登录游戏",
+          "fontSize": 40,
+          "color": "#ffffff",
+          "bold": true,
+          "width": 240,
+          "height": 54
+        },
+        {
+          "_$id": "login_name_input",
+          "_$type": "Input",
+          "name": "NameInput",
+          "prompt": "请输入名字",
+          "promptColor": "#77839a",
+          "fontSize": 26,
+          "color": "#1b2433",
+          "maxChars": 16,
+          "padding": [
+            0,
+            18,
+            0,
+            18
+          ],
+          "width": 420,
+          "height": 64,
+          "bgColor": "#ffffff",
+          "borderColor": "#94a3b8"
+        },
+        {
+          "_$id": "login_button",
+          "_$type": "Sprite",
+          "name": "LoginButton",
+          "width": 420,
+          "height": 64,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "login_label",
+              "_$type": "Text",
+              "name": "LoginLabel",
+              "text": "登录",
+              "fontSize": 28,
+              "color": "#ffffff",
+              "bold": true,
+              "width": 80,
+              "height": 38,
+              "mouseEnabled": false
+            }
+          ]
+        },
+        {
+          "_$id": "login_error",
+          "_$type": "Text",
+          "name": "ErrorText",
+          "text": "",
+          "fontSize": 20,
+          "color": "#ffb4a8",
+          "align": "center",
+          "width": 420,
+          "height": 28
+        }
+      ]
+    }
+  ]
+}

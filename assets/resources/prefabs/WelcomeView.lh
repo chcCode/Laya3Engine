@@ -1,0 +1,66 @@
+{
+  "_$ver": 1,
+  "_$id": "welcome_prefab_root",
+  "_$type": "Sprite",
+  "name": "WelcomeViewPrefab",
+  "width": 1334,
+  "height": 750,
+  "mouseThrough": true,
+  "_$child": [
+    {
+      "_$id": "welcome_title",
+      "_$type": "Text",
+      "name": "Title",
+      "text": "Laya3 通用游戏框架",
+      "fontSize": 42,
+      "color": "#ffffff",
+      "bold": true,
+      "width": 640,
+      "height": 56
+    },
+    {
+      "_$id": "welcome_tip",
+      "_$type": "Text",
+      "name": "Tip",
+      "text": "已集成：事件总线 / 服务容器 / 资源 / 场景 / UI层级 / 音频 / 输入 / 本地存档 / 状态机",
+      "fontSize": 24,
+      "color": "#c9d4ff",
+      "wordWrap": true,
+      "width": 640,
+      "height": 80
+    },
+    {
+      "_$id": "welcome_switch_btn",
+      "_$type": "Sprite",
+      "name": "SwitchButton",
+      "width": 360,
+      "height": 58,
+      "mouseEnabled": true,
+      "_$child": [
+        {
+          "_$id": "welcome_switch_label",
+          "_$type": "Text",
+          "name": "SwitchLabel",
+          "text": "切换示例场景",
+          "fontSize": 24,
+          "color": "#ffffff",
+          "bold": true,
+          "width": 180,
+          "height": 34,
+          "mouseEnabled": false
+        }
+      ]
+    },
+    {
+      "_$id": "welcome_scene_status",
+      "_$type": "Text",
+      "name": "SceneStatus",
+      "text": "当前场景：启动场景",
+      "fontSize": 20,
+      "color": "#9ee7ff",
+      "align": "center",
+      "width": 640,
+      "height": 30
+    }
+  ]
+}
